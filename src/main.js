@@ -52,13 +52,15 @@ if (environment.isBrowser) {
   exports.homepage = '{{package-homepage}}';
   exports.version = '{{package-version}}';
 } else {
-  var packageInfoModuleName = '../package.json';
-  var packageInfo = require(packageInfoModuleName);
+  var packageInfo = require('../package.json');
   exports.homepage = packageInfo.homepage;
   exports.version = packageInfo.version;
 
-  var formatterModuleName = './formatters';
-  var formatters = require(formatterModuleName);
+  var formatters = {};
+  var requireContext = require.context("./formatters", false, /^\.\/.*\.js$/);
+  requireContext.keys().forEach(function(e) {
+    formatters[/\.\/(.*)\.js/.exec(e)[1]] = requireContext(e);
+  });
   exports.formatters = formatters;
   // shortcut for console
   exports.console = formatters.console;
